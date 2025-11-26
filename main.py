@@ -53,6 +53,10 @@ def main(programURL, session):
     writeToCSV(programs)
     logging.info("Extraction is completed\n")
 
+    # Load data into local dict and display
+    program_dict = {}
+    parseCSV(program_dict)
+
 # ------------------------------------------------------------
 # loadConfig()
 # Loads crawler configuration values from config.ini file.
@@ -81,7 +85,17 @@ def writeToCSV(programs):
         writer.writeheader()
         writer.writerows(programs)
 
-
+# ------------------------------------------------------------
+# parseCSV()
+# Reads stored CSV data and loads it into a searchable data structure
+# @author Sean Dunn
+# ------------------------------------------------------------
+def parseCSV(dict):
+    with open("programs.csv", "r", newline="", encoding="utf-8") as f:
+        reader = csv.reader(f)
+        for row in reader:
+            row_parse = row.split(",")
+            dict[row_parse[1]] = row_parse[4]
 # ------------------------------------------------------------
 # extractPrograms()
 # Extracts program categories and programs using BeautifulSoup.
