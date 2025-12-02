@@ -1,3 +1,4 @@
+from turtle import delay
 from bs4 import BeautifulSoup
 import requests
 import csv, time, threading, logging
@@ -10,7 +11,7 @@ import configparser
 seed_url = "https://www.ccsu.edu"
 
 # Define the custom User-Agent
-user_agent = "CCSUprogramscrawler"
+user_agent = "CCSUProgramsCrawler"
 
 headers = {
     "User-Agent": user_agent,
@@ -72,9 +73,9 @@ def loadConfig():
     seed_url = config["CRAWLER"].get("seed_url")
     user_agent = config["CRAWLER"].get("user_agent", "DefaultCrawlerAgent")
     num_threads = config["CRAWLER"].getint("num_threads", 10)
-    min_request_interval = config["CRAWLER"].getfloat("min_request_interval", 0.5)
+    min_interval = config["CRAWLER"].getfloat("min_request_interval", 0.5)
 
-    return seed_url, user_agent, num_threads, min_request_interval
+    return seed_url, user_agent, num_threads, min_interval
 
 # ------------------------------------------------------------
 # writeToCSV()
@@ -96,7 +97,7 @@ def writeToCSV(programs):
 def parseCSV():
     with open("programs.csv", "r", newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
-        return reader
+        return list(reader)
 # ------------------------------------------------------------
 # extractPrograms()
 # Extracts program categories and programs using BeautifulSoup.
@@ -183,16 +184,18 @@ def validateURLInRobotFile(seed_url, headers, program_URL):
 # Ensures thread-safe rate limiting.
 # author Kavitha Sridhar
 # ------------------------------------------------------------
-def politeGet(session, url, headers, min_interval=min_interval):
+def politeGet(session, url, headers):
     global last_request_time
 
     with lock:
-        elapsed = time.time() - last_request_time
-        delay = max(0, min_interval - elapsed)
-        last_request_time = time.time() + delay
+        now = time.time()
+        if now < last_request_time + min_interval:
+            delay = (last_request_time + min_interval) - now
+        else:
+            delay = 0
+        last_request_time = now + delay
 
-    if delay > 0:
-        time.sleep(delay)
+    time.sleep(delay)
 
     response = session.get(url, headers=headers, timeout=10)
     logging.info("Get :" + url)
