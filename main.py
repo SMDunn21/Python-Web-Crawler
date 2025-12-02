@@ -29,6 +29,7 @@ min_interval = 0.1
 # @author Kavitha Sridhar
 # ------------------------------------------------------------
 def main(programURL, session):
+
     global seed_url, user_agent, num_threads, min_interval
     seed_url, user_agent, num_threads, min_interval = loadConfig()
     try:
@@ -53,9 +54,11 @@ def main(programURL, session):
     writeToCSV(programs)
     logging.info("Extraction is completed\n")
 
+
     # Load data into local dict and display
-    program_dict = {}
-    parseCSV(program_dict)
+    program_dict = parseCSV()
+    for i in program_dict:
+        print(i)
 
 # ------------------------------------------------------------
 # loadConfig()
@@ -90,12 +93,10 @@ def writeToCSV(programs):
 # Reads stored CSV data and loads it into a searchable data structure
 # @author Sean Dunn
 # ------------------------------------------------------------
-def parseCSV(dict):
+def parseCSV():
     with open("programs.csv", "r", newline="", encoding="utf-8") as f:
-        reader = csv.reader(f)
-        for row in reader:
-            row_parse = row.split(",")
-            dict[row_parse[1]] = row_parse[4]
+        reader = csv.DictReader(f)
+        return reader
 # ------------------------------------------------------------
 # extractPrograms()
 # Extracts program categories and programs using BeautifulSoup.
@@ -214,6 +215,15 @@ def initializeLog():
         format="%(asctime)s [%(levelname)s] %(threadName)s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S"
     )
+
+# ------------------------------------------------------------
+# print_elements()
+# Prints all elements in dict
+# Used in testing
+# author Sean Dunn
+# ------------------------------------------------------------
+def print_elements(program_dict):
+    print(program_dict.keys())
 
 
 # ------------------------------------------------------------
