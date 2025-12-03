@@ -58,8 +58,8 @@ def main(programURL, session):
 
     # Load data into local dict and display
     program_dict = parseCSV()
-    for i in program_dict:
-        print(i)
+    displayMenu(program_dict)
+
 
 # ------------------------------------------------------------
 # loadConfig()
@@ -92,7 +92,7 @@ def writeToCSV(programs):
 # ------------------------------------------------------------
 # parseCSV()
 # Reads stored CSV data and loads it into a searchable data structure
-# @author Sean Dunn
+# @author Sean Dunn, Michael Bucoy
 # ------------------------------------------------------------
 def parseCSV():
     with open("programs.csv", "r", newline="", encoding="utf-8") as f:
@@ -225,8 +225,30 @@ def initializeLog():
 # Used in testing
 # author Sean Dunn
 # ------------------------------------------------------------
-def print_elements(program_dict):
-    print(program_dict.keys())
+def displayMenu(program_dict):
+    usingMenu = True
+    while usingMenu:
+        print("Please select an option:\n1. Enter Major and view Description\n2. Enter Category and view Majors\n3. View all Majors\n4. Exit\n")
+        opt = input("> ")
+        match opt:
+            case "1":
+                prog = input("Program Name: ")
+                for i in program_dict:
+                    if i["Program Name"] == prog:
+                        print(i["Description"])
+            case "2":
+                cat = input("Program Name: ")
+                for i in program_dict:
+                    if i["Category"] == cat:
+                        print(i["Program Name"])
+            case "3":
+                for i in program_dict:
+                    print(i["Program Name"])
+            case "4":
+                usingMenu = False
+            case _:
+                print("Invalid input. Please try again.\n")
+        print("\n\n")
 
 
 # ------------------------------------------------------------
